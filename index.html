@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KOURI AI — Image Enhancer</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="en">
+  <header class="site-header">
+    <div class="brand">
+      <img src="/logo.png" alt="KOURI AI logo" class="logo" id="logoImg" />
+      <div>
+        <h1 class="site-title">KOURI AI</h1>
+        <p class="site-tagline" data-en="AI image enhancement" data-ar="تحسين الصور بالذكاء الاصطناعي">AI image enhancement</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="lang-switch">
+        <button id="btn-en" class="lang-btn active">EN</button>
+        <button id="btn-ar" class="lang-btn">AR</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel upload-panel">
+      <h2 data-en="Upload & Enhance" data-ar="تحميل وتحسين">Upload & Enhance</h2>
+      <p class="lead" data-en="Choose an image and press Enhance. Results appear below." data-ar="اختار صورة واضغط تحسين. النتيجة ستظهر أسفله.">
+        Choose an image and press Enhance. Results appear below.
+      </p>
+
+      <form id="uploadForm" class="form">
+        <label class="file-label">
+          <input type="file" id="imageInput" accept="image/*" />
+          <span data-en="Choose image" data-ar="اختر صورة">Choose image</span>
+        </label>
+
+        <div class="actions">
+          <button type="submit" id="enhanceBtn" class="btn primary" data-en="Enhance" data-ar="تحسين">Enhance</button>
+          <button type="button" id="resetBtn" class="btn" data-en="Reset" data-ar="إعادة">Reset</button>
+        </div>
+
+        <div id="loading" class="loading" aria-hidden="true" style="display:none;">
+          <div class="spinner"></div>
+          <div class="loading-text" data-en="Processing... (may take a few seconds)" data-ar="جاري المعالجة... (قد يستغرق بضع ثوانٍ)">Processing... (may take a few seconds)</div>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel result-panel">
+      <h2 data-en="Result" data-ar="النتيجة">Result</h2>
+      <div class="images-grid">
+        <div class="image-card">
+          <h3 data-en="Original" data-ar="الأصلية">Original</h3>
+          <img id="beforeImage" src="" alt="Original" />
+        </div>
+        <div class="image-card">
+          <h3 data-en="Enhanced" data-ar="المحسّنة">Enhanced</h3>
+          <img id="resultImage" src="" alt="Enhanced" />
+          <a id="downloadLink" class="btn download" href="#" download="kouri-enhanced.png" style="display:none;" data-en="Download" data-ar="تحميل">Download</a>
+        </div>
+      </div>
+      <p class="note" data-en="Tip: For best results use high-resolution source images." data-ar="نصيحة: للحصول على أفضل النتائج استعمل صور عالية الدقة.">
+        Tip: For best results use high-resolution source images.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© KOURI AI — <span data-en="Built with DeepAI" data-ar="مبني بـ DeepAI">Built with DeepAI</span></small>
+  </footer>
+
+  <script src="/script.js"></script>
+</body>
+</html>
