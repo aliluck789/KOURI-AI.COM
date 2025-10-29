@@ -1,50 +1,41 @@
-const fetch = require('node-fetch');
-const FormData = require('form-data');
+import fetch from "node-fetch";
+import FormData from "form-data";
 
-module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { image } = req.body || {};
+    const { image } = req.body;
 
     if (!image) {
-      res.status(400).json({ error: 'No image provided' });
-      return;
+      return res.status(400).json({ error: "No image provided" });
     }
 
-    const matches = image.match(/^data:(image\/(png|jpeg|jpg|webp));base64,(.+)$/);
-    if (!matches) {
-      res.status(400).json({ error: 'Invalid image format. Expecting data URL.' });
-      return;
-    }
-
-    const mime = matches[1];
-    const base64Data = matches[3];
-    const buffer = Buffer.from(base64Data, 'base64');
-
-    const DEEP_AI_KEY = process.env.DEEP_AI_KEY;
+    const DEEP_AI_KEY = 66ee75ca-89d7-4793-a627-83a272830007;
     if (!DEEP_AI_KEY) {
-      res.status(500).json({ error: 'Server misconfigured: missing DEEP_AI_KEY' });
-      return;
+      return res.status(500).json({ error: "Missing DeepAI API Key" });
     }
 
-    const form = new FormData();
-    form.append('image', buffer, { filename: 'upload.png', contentType: mime });
+    const formData = new FormData();
+    formData.append("image", image);
 
-    const response = await fetch('https://api.deepai.org/api/torch-srgan', {
-      method: 'POST',
-      headers: { 'api-key': DEEP_AI_KEY },
-      body: form
+    const response = await fetch("https://api.deepai.org/api/torch-srgan", {
+      method: "POST",
+      headers: { "api-key": DEEP_AI_KEY },
+      body: formData,
     });
 
-    const json = await response.json();
+    const data = await response.json();
 
-    res.status(response.ok ? 200 : 500).json(json);
-  } catch (err) {
-    console.error('Error in /api/enhance:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    if (data.output_url) {
+      res.status(200).json({ output_url: data.output_url });
+    } else {
+      res.status(500).json({ error: data.error || "Unknown error" });
+    }
+  } catch (error) {
+    console.error("Enhance API Error:", error);
+    res.status(500).json({ error: "Server error occurred" });
   }
-};
+}
