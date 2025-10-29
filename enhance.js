@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import FormData from "form-data";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -13,29 +12,39 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No image provided" });
     }
 
-    const DEEP_AI_KEY = 66ee75ca-89d7-4793-a627-83a272830007;
-    if (!DEEP_AI_KEY) {
-      return res.status(500).json({ error: "Missing DeepAI API Key" });
+    const REPLICATE_API_KEY = process.env.REPLICATE_API_KEY;
+    if (!REPLICATE_API_KEY) {
+      return res.status(500).json({ error: "Missing Replicate API key" });
     }
 
-    const formData = new FormData();
-    formData.append("image", image);
-
-    const response = await fetch("https://api.deepai.org/api/torch-srgan", {
+    // إرسال الصورة إلى نموذج Real-ESRGAN على Replicate
+    const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
-      headers: { "api-key": DEEP_AI_KEY },
-      body: formData,
+      headers: {
+        "Authorization": `Token ${REPLICATE_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        version: "fac1b2e68fae2f3cd2d5300de4eae0d96e58caa6bfb1c3dc1d47f8d609a9924f", // Real-ESRGAN
+        input: { image }
+      })
     });
 
     const data = await response.json();
 
-    if (data.output_url) {
-      res.status(200).json({ output_url: data.output_url });
-    } else {
-      res.status(500).json({ error: data.error || "Unknown error" });
+    if (data.error) {
+      return res.status(500).json({ error: data.error });
     }
+
+    // جلب النتيجة بعد اكتمال المعالجة
+    const resultUrl = data.output?.[0];
+    if (!resultUrl) {
+      return res.status(202).json({ message: "Processing... please wait." });
+    }
+
+    res.status(200).json({ output_url: resultUrl });
   } catch (error) {
-    console.error("Enhance API Error:", error);
+    console.error("Replicate API Error:", error);
     res.status(500).json({ error: "Server error occurred" });
   }
 }
